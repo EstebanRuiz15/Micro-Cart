@@ -1,0 +1,53 @@
+package com.emazon.micro_cart.infraestructur.driven_rp.adapter;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.emazon.micro_cart.domain.interfaces.IRepositoryCart;
+import com.emazon.micro_cart.domain.model.Cart;
+import com.emazon.micro_cart.domain.model.CartItems;
+import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartItemsEntity;
+import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
+import com.emazon.micro_cart.infraestructur.driven_rp.persistence.IRepositoryCartJpa;
+import com.emazon.micro_cart.infraestructur.security.jwt_configuration.JwtService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Objects;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class RepositoryCartImpl implements IRepositoryCart {
+    private final IRepositoryCartJpa repositoryJpa;
+    private final IMapperCartToEntity mapper;
+    private final JwtService jwtService;
+
+    @Override
+    public void addItemToCart(Cart cart, CartItems cartItems) {
+
+        CartItemsEntity cartItemsEntity = mapper.toCartItemsEntity(cartItems);
+        cartItemsEntity.setCart(mapper.toCartEntity(cart));
+        cart.getItems().add(cartItemsEntity);
+        repositoryJpa.save(mapper.toCartEntity(cart));
+    };
+
+    @Override
+    public Optional<Cart> findByUserId(Integer id) {
+        return repositoryJpa.findByUserId(id)
+                .map(mapper::toCart);
+    };
+
+    @Override
+    public Integer getClientId() {
+
+        HttpServletRequest request = ((ServletRequestAttributes) Objects
+                .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String jwt = request.getHeader("Authorization");
+        jwt = jwt.substring(7);
+        return jwtService.extractUserId(jwt);
+    }
+
+}
