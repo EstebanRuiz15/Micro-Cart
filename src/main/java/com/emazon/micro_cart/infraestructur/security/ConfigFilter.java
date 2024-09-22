@@ -25,10 +25,10 @@ public class ConfigFilter {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-        .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")) 
+        .csrf(csrf -> csrf.disable()) 
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
             .anyRequest()
             .authenticated()    
              

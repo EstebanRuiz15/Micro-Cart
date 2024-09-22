@@ -14,6 +14,7 @@ import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 
@@ -47,10 +48,31 @@ public class ControllerCart{
     })
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/{id}/{quantity}")
-    public ResponseEntity<?> addItemsToCart(@PathVariable(ConstantsInfraestructure.ID) @NotNull Integer id,
-                                            @PathVariable(ConstantsInfraestructure.QUANTITY) @NotNull Integer quantity){
+    public ResponseEntity<?> addItemsToCart(@PathVariable(ConstantsInfraestructure.ID) @NotNull @Min(1) Integer id,
+                                            @PathVariable(ConstantsInfraestructure.QUANTITY) @NotNull @Min(1) Integer quantity){
     serviceCart.addItemsToCart(id,quantity);
     return ResponseEntity.ok(ConstantsInfraestructure.ADD_WITH_EXIT);
+    }
+
+
+    @Operation(summary = "Method for delet items to the cart", description = "This method allows you to delete items to the cart\n\n "
+            +
+            "rules:\n\n" + //
+            "      -Every time an item is deleted it should be removed from the cart.\n\n" +
+            "      -Only the customer role can delete items from the cart.\n\n" +
+            "      -When removing an item from the cart, the last modification date would be required to be updated..\n\n")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "article delete with exit"),
+            @ApiResponse(responseCode = "400", description = " Invalid parameter. Possible errors:\n\n" +
+                    "    - `id`: Cannot be null\n\n" +
+                    "    - `quantity`: Must be greater than zero.\n\n"),
+    })
+    @PreAuthorize("hasRole('CLIENT')")
+    @PostMapping("/delete/{id}/{quantity}")
+    public ResponseEntity<?> deleteItemsToCart(@PathVariable("id") @NotNull Integer id,
+                                               @PathVariable("quantity") @NotNull Integer quantity){
+        serviceCart.deleteItemsToCart(id, quantity);
+     return ResponseEntity.ok(ConstantsInfraestructure.DELETE_WHIT_SUCESS);    
     }
 }
 

@@ -9,4 +9,5 @@ public interface IRepositoryCart {
     void addItemToCart(Cart cart, CartItems cartItems);
     Optional<Cart> findByUserId(Integer id);
     Integer getClientId();
+    void save(Cart cart);
 }

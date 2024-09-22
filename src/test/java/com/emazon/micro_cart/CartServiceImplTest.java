@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,9 +42,20 @@ class CartServiceImplTest {
     @InjectMocks
     private CartServiceImpl cartService;
 
+    private Cart cart;
+    private CartItems cartItem;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        cart = new Cart();
+        cart.setId(1);
+        cart.setUserId(123);
+
+        cartItem = new CartItems();
+        cartItem.setProductId(1);
+        cartItem.setQuantity(5);
+        cartItem.setCart(mapper.toCartEntity(cart));
     }
 
     @Test
@@ -154,5 +167,65 @@ class CartServiceImplTest {
         cartService.addItemsToCart(1, 5);
 
         verify(repository, times(1)).addItemToCart(any(Cart.class), any(CartItems.class));
+    }
+
+    @Test
+    public void testDeleteItemsToCart_ItemDeleted() {
+        when(repository.getClientId()).thenReturn(123);
+        when(repositoryItems.findByProductIdAndUserId(1, 123)).thenReturn(Optional.of(cartItem));
+        when(repository.findByUserId(123)).thenReturn(Optional.of(cart));
+
+        cartService.deleteItemsToCart(1, 5);
+
+        verify(repositoryItems, times(1)).delete(cartItem);
+        verify(repository, times(1)).save(cart);
+        assertEquals(cart.getModiDate().toLocalDate(), LocalDateTime.now().toLocalDate());
+    }
+
+    @Test
+    public void testDeleteItemsToCart_ItemQuantityReduced() {
+        when(repository.getClientId()).thenReturn(123);
+        when(repositoryItems.findByProductIdAndUserId(1, 123)).thenReturn(Optional.of(cartItem));
+        when(repository.findByUserId(123)).thenReturn(Optional.of(cart));
+
+        cartService.deleteItemsToCart(1, 3);
+
+        assertEquals(2, cartItem.getQuantity());
+        verify(repositoryItems, times(1)).save(cartItem);
+        verify(repositoryItems, never()).delete(cartItem);
+        verify(repository, times(1)).save(cart);
+    }
+
+    @Test
+    public void testDeleteItemsToCart_CartItemNotFound() {
+        when(repository.getClientId()).thenReturn(123);
+        when(repositoryItems.findByProductIdAndUserId(1, 123)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> cartService.deleteItemsToCart(1, 3));
+
+        verify(repositoryItems, never()).delete(any());
+        verify(repositoryItems, never()).save(any());
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    public void testCartAndCartItemPresent_CartItemUpdated() {
+        
+        Integer userId = 123;
+        Integer productId = 1;
+        Integer quantity = 3;
+        List<Integer> articleIds = Arrays.asList(1, 2, 3);
+        Integer itemQuantity = 8; 
+    
+      
+        when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(articleIds);
+        when(stockService.validCategories(articleIds)).thenReturn(true);
+        when(stockService.validItemExist(productId)).thenReturn(true); 
+        when(stockService.validItemQuantity(productId)).thenReturn(itemQuantity); 
+        when(repositoryItems.findByProductIdAndUserId(productId, userId)).thenReturn(Optional.of(cartItem));
+    
+        cartService.addItemsToCart(productId, quantity);
+        assertEquals(5, cartItem.getQuantity());
     }
 }
