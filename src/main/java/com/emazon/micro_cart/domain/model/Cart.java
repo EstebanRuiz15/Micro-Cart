@@ -23,8 +23,6 @@ public class Cart {
 
     private LocalDateTime modiDate;
 
-    private Integer quantity;
-
     private List<CartItemsEntity> items = new ArrayList<>();
 
     

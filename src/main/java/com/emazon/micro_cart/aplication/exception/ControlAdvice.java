@@ -11,21 +11,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-import com.emazon.micro_cart.domain.exception.ErrorException;
+import com.emazon.micro_cart.domain.exception.ErrorExceptionCategoriesRepit;
 import com.emazon.micro_cart.domain.exception.ErrorExceptionQuantity;
+import com.emazon.micro_cart.domain.exception.ErrorFeignException;
 import com.emazon.micro_cart.domain.exception.ErrorNotFoudArticle;
 import com.emazon.micro_cart.domain.util.ConstantsDomain;
 
 @ControllerAdvice
 public class ControlAdvice {
-
-    @ExceptionHandler(ErrorException.class)
-    public ResponseEntity<?> resourceNotFoundException(ErrorException ex, WebRequest request) {
-        ExceptionResponse errorDetails = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(ErrorNotFoudArticle.class)
     public ResponseEntity<ExceptionResponse> handleErrorNotFoundArticle(ErrorNotFoudArticle ex, WebRequest request) {
@@ -62,4 +55,22 @@ public class ControlAdvice {
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(ErrorExceptionCategoriesRepit.class)
+    public ResponseEntity<?> categoriesRepeatError(ErrorExceptionCategoriesRepit ex, WebRequest request) {
+        ExceptionResponse errorDetails = new ExceptionResponse(HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ErrorFeignException.class)
+    public ResponseEntity<?> handleErrorFeignException(ErrorFeignException ex, WebRequest request) {
+       
+        ExceptionResponse errorResponse = new ExceptionResponse(HttpStatus.SERVICE_UNAVAILABLE.value(),
+        ex.getMessage(),
+        request.getDescription(false));
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }
+

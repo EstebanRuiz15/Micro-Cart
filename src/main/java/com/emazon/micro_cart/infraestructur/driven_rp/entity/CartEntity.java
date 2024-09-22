@@ -38,9 +38,6 @@ public class CartEntity {
     @Column (name= "modi_date",nullable=false)
     private Date modiDate;
 
-    @Column (name="cantidad")
-    private Integer quantity;
-
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItemsEntity> items = new ArrayList<>();
 }

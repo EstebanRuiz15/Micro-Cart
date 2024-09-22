@@ -1,6 +1,6 @@
 package com.emazon.micro_cart.infraestructur.security;
 
-/* import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.microstock.apistock.infraestructur.security.jwt_configuration.JwtAutenticationFilter;
+import com.emazon.micro_cart.infraestructur.security.jwt_configuration.JwtAutenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +25,10 @@ public class ConfigFilter {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-        .csrf(csrf -> csrf.disable()) 
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")) 
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
             .anyRequest()
             .authenticated()    
              
@@ -43,4 +43,3 @@ public class ConfigFilter {
     }
      
 }
- */

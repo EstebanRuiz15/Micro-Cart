@@ -1,13 +1,13 @@
 package com.emazon.micro_cart.infraestructur.security;
 
-/* import java.io.IOException;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.microstock.apistock.infraestructur.util.ConstantsInfraestructure;
+import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,4 +32,3 @@ public class CustomEntryPoint implements AuthenticationEntryPoint{
     
 }
 
- */
