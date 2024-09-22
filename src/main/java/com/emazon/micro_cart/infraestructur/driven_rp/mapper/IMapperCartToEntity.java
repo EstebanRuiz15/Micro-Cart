@@ -13,4 +13,5 @@ public interface IMapperCartToEntity {
     CartEntity toCartEntity(Cart cart);
     Cart toCart(CartEntity cartEntity);
     CartItemsEntity toCartItemsEntity(CartItems cartItems);
+    CartItems toCartItems(CartItemsEntity cartItemsEntity);
 }

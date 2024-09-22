@@ -16,6 +16,7 @@ import feign.FeignException;
 import java.util.List;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import java.util.Optional;
 
 @AllArgsConstructor
 public class CartServiceImpl implements ICartServicePort {
@@ -41,16 +42,27 @@ public class CartServiceImpl implements ICartServicePort {
                         ConstantsDomain.MESSAGE_ONLY_HAVE + itemQuantity + ConstantsDomain.PRODUCTS);
             }
             Integer userid = repository.getClientId();
+            Cart cart;
 
             if (!repository.findByUserId(userid).isPresent()) {
-                Cart car = createNewCart(userid);
-                addProductToCart(car, id, quantity);
+                cart = createNewCart(userid);
+                repository.save(cart);
+                addProductToCart(cart, id, quantity);
             } else {
-                Cart cart = repository.findByUserId(userid).get();
+                cart = repository.findByUserId(userid).get();
                 List<Integer> ids = repositoryItems.getAllArticlesId(cart.getId());
                 if (stockService.validCategories(ids)) {
+                    Optional<CartItems> cartItem = repositoryItems.findByProductIdAndUserId(id, userid);
+                    if (cartItem.isPresent()) {
+                        CartItems item = cartItem.get();
+                        cart.setModiDate(LocalDateTime.now());
+                        item.setQuantity(item.getQuantity() + quantity);
+                        repository.save(cart);
+                        repositoryItems.save(cartItem.get());
+                    }else{
                     cart.setModiDate(LocalDateTime.now());
                     addProductToCart(cart, id, quantity);
+                    }
                 } else {
                     throw new ErrorExceptionCategoriesRepit(ConstantsDomain.ERROR_3_CATEGORIES_REPEAT);
                 }
@@ -60,6 +72,21 @@ public class CartServiceImpl implements ICartServicePort {
             throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE + e.getMessage() + e));
         }
     };
+
+    @Override
+    public void deleteItemsToCart(Integer idArticle, Integer quantity) {
+        Integer clientId = repository.getClientId();
+        CartItems item=repositoryItems.findByProductIdAndUserId(idArticle,clientId).get();
+        if((item.getQuantity()-quantity)<=0){
+            repositoryItems.delete(item);
+        }else{
+            item.setQuantity(item.getQuantity()-quantity);
+            repositoryItems.save(item);
+        }
+        Cart cart = repository.findByUserId(clientId).get();
+        cart.setModiDate(LocalDateTime.now());
+        repository.save(cart);
+    }
 
     private Cart createNewCart(Integer userId) {
         Cart newCart = new Cart();

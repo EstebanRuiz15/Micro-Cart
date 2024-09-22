@@ -32,7 +32,7 @@ public class RepositoryCartImpl implements IRepositoryCart {
         cartItemsEntity.setCart(mapper.toCartEntity(cart));
         cart.getItems().add(cartItemsEntity);
         repositoryJpa.save(mapper.toCartEntity(cart));
-    };
+    }
 
     @Override
     public Optional<Cart> findByUserId(Integer id) {
@@ -48,6 +48,11 @@ public class RepositoryCartImpl implements IRepositoryCart {
         String jwt = request.getHeader("Authorization");
         jwt = jwt.substring(7);
         return jwtService.extractUserId(jwt);
+    }
+
+    @Override
+    public void save(Cart cart){
+        repositoryJpa.save(mapper.toCartEntity(cart));
     }
 
 }

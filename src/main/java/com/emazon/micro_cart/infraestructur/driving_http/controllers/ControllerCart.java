@@ -14,6 +14,7 @@ import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 
@@ -47,10 +48,18 @@ public class ControllerCart{
     })
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/{id}/{quantity}")
-    public ResponseEntity<?> addItemsToCart(@PathVariable(ConstantsInfraestructure.ID) @NotNull Integer id,
-                                            @PathVariable(ConstantsInfraestructure.QUANTITY) @NotNull Integer quantity){
+    public ResponseEntity<?> addItemsToCart(@PathVariable(ConstantsInfraestructure.ID) @NotNull @Min(1) Integer id,
+                                            @PathVariable(ConstantsInfraestructure.QUANTITY) @NotNull @Min(1) Integer quantity){
     serviceCart.addItemsToCart(id,quantity);
     return ResponseEntity.ok(ConstantsInfraestructure.ADD_WITH_EXIT);
+    }
+
+    @PreAuthorize("hasRole('CLIENT')")
+    @PostMapping("/delete/{id}/{quantity}")
+    public ResponseEntity<?> deleteItemsToCart(@PathVariable("id") @NotNull Integer id,
+                                               @PathVariable("quantity") @NotNull Integer quantity){
+        serviceCart.deleteItemsToCart(id, quantity);
+     return ResponseEntity.ok("delete with exit");    
     }
 }
 
