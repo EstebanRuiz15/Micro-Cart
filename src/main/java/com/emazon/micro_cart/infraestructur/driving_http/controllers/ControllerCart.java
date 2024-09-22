@@ -54,12 +54,25 @@ public class ControllerCart{
     return ResponseEntity.ok(ConstantsInfraestructure.ADD_WITH_EXIT);
     }
 
+
+    @Operation(summary = "Method for delet items to the cart", description = "This method allows you to delete items to the cart\n\n "
+            +
+            "rules:\n\n" + //
+            "      -Every time an item is deleted it should be removed from the cart.\n\n" +
+            "      -Only the customer role can delete items from the cart.\n\n" +
+            "      -When removing an item from the cart, the last modification date would be required to be updated..\n\n")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "article delete with exit"),
+            @ApiResponse(responseCode = "400", description = " Invalid parameter. Possible errors:\n\n" +
+                    "    - `id`: Cannot be null\n\n" +
+                    "    - `quantity`: Must be greater than zero.\n\n"),
+    })
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/delete/{id}/{quantity}")
     public ResponseEntity<?> deleteItemsToCart(@PathVariable("id") @NotNull Integer id,
                                                @PathVariable("quantity") @NotNull Integer quantity){
         serviceCart.deleteItemsToCart(id, quantity);
-     return ResponseEntity.ok("delete with exit");    
+     return ResponseEntity.ok(ConstantsInfraestructure.DELETE_WHIT_SUCESS);    
     }
 }
 

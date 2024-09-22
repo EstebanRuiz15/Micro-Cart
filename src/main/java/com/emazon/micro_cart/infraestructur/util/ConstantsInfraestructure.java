@@ -13,4 +13,5 @@ public final  class ConstantsInfraestructure {
     public static final String ADD_WITH_EXIT="article added with exit";
     public static final String ID="id";
     public static final String QUANTITY="quantity";
+    public static final String DELETE_WHIT_SUCESS="delete with exit";
 }
