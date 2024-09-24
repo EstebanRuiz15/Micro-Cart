@@ -1,5 +1,7 @@
 package com.emazon.micro_cart.infraestructur.driven_rp.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +26,5 @@ public interface IRepositoryCartItemsJpa extends JpaRepository<CartItemsEntity, 
     @Query("SELECT ci FROM CartItemsEntity ci WHERE ci.productId = :productId AND ci.cart.userId = :userId")
     Optional<CartItemsEntity> findByProductIdAndUserId(@Param("productId") Integer productId, @Param("userId") Integer userId);
 
+    Page<CartItemsEntity> findItemIdsByCartId(Integer cartId, Pageable pageable);
 }

@@ -11,5 +11,8 @@ public final class  ConstantsDomain {
     public static final String PRODUCTS=" products";
     public static final String MESSAGE_DATE_ARRIVE_SUPPLY="in 7 days arrive supply to this ";
     public static final String NOT_FOUND_ARTICLE="not found article: ";
-    public static final String COMUNICATION_ERROR_WITH_SERVICE="Error communicating with stock service: ";
+    public static final String COMUNICATION_ERROR_WITH_SERVICE="Error communicating with stock service ";
+    public static final String ADD_WITH_EXIT="article added with exit";
+    public static final String DELETE_WHIT_SUCESS="delete with exit";
+    public static final String NOT_ARTICLE_TO_DELETE="The article has already been deleted";
 }

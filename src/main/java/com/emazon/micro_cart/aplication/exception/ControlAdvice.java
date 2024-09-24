@@ -11,6 +11,8 @@ import com.emazon.micro_cart.domain.exception.ErrorExceptionCategoriesRepit;
 import com.emazon.micro_cart.domain.exception.ErrorExceptionQuantity;
 import com.emazon.micro_cart.domain.exception.ErrorFeignException;
 import com.emazon.micro_cart.domain.exception.ErrorNotFoudArticle;
+import com.emazon.micro_cart.domain.exception.ErrorNotFoundArticleToDelete;
+
 import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
@@ -84,5 +86,13 @@ public class ControlAdvice {
         response.setDetails(errorMessage);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ErrorNotFoundArticleToDelete.class)
+    public ResponseEntity<?> ErrorNotArticleToDelete(ErrorNotFoundArticleToDelete ex, WebRequest request) {
+        ExceptionResponse errorDetails = new ExceptionResponse(HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 }

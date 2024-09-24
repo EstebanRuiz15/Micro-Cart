@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,12 +47,12 @@ public class ControllerCart{
              @ApiResponse(responseCode = "409", description = "   - 'conflict, There cannot be more than 3 articles with the same category'\n\n" +
                     "   - 'conflict, at this moment only have # of articles' ")
     })
+
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/{id}/{quantity}")
     public ResponseEntity<?> addItemsToCart(@PathVariable(ConstantsInfraestructure.ID) @NotNull @Min(1) Integer id,
                                             @PathVariable(ConstantsInfraestructure.QUANTITY) @NotNull @Min(1) Integer quantity){
-    serviceCart.addItemsToCart(id,quantity);
-    return ResponseEntity.ok(ConstantsInfraestructure.ADD_WITH_EXIT);
+    return ResponseEntity.ok(serviceCart.addItemsToCart(id,quantity));
     }
 
 
@@ -71,8 +72,15 @@ public class ControllerCart{
     @PostMapping("/delete/{id}/{quantity}")
     public ResponseEntity<?> deleteItemsToCart(@PathVariable("id") @NotNull Integer id,
                                                @PathVariable("quantity") @NotNull Integer quantity){
-        serviceCart.deleteItemsToCart(id, quantity);
+        
+     return ResponseEntity.ok(serviceCart.deleteItemsToCart(id, quantity));    
+    }
+
+    @PreAuthorize("hasRole('CLIENT')")
+    @GetMapping("/")
+    public ResponseEntity<?> getAllItemsToCart(){
      return ResponseEntity.ok(ConstantsInfraestructure.DELETE_WHIT_SUCESS);    
     }
+    
 }
 

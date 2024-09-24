@@ -2,8 +2,12 @@ package com.emazon.micro_cart.infraestructur.driven_rp.adapter;
 
 import org.springframework.stereotype.Component;
 
+import com.emazon.micro_cart.domain.exception.ErrorFeignException;
 import com.emazon.micro_cart.domain.interfaces.IStockServicePort;
+import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.feign.StockClient;
+
+import feign.FeignException;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -16,16 +20,28 @@ public class ServiceFeignImple implements IStockServicePort {
 
     @Override
     public boolean validItemExist(Integer id) {
-        return stockClient.validItemExist(id);
+        try {
+            return stockClient.validItemExist(id);
+        } catch (FeignException e) {
+            throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
+        }
     };
 
     @Override
-    public Integer validItemQuantity(Integer id){
-        return stockClient.validQuantityItems(id);
+    public Integer validItemQuantity(Integer id) {
+        try {
+            return stockClient.validQuantityItems(id);
+        } catch (FeignException e) {
+            throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
+        }
     };
 
     @Override
-    public boolean validCategories(List<Integer> idarticles){
-        return stockClient.validCategories(idarticles);
+    public boolean validCategories(List<Integer> idarticles) {
+        try {
+            return stockClient.validCategories(idarticles);
+        } catch (FeignException e) {
+            throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
+        }
     };
 }

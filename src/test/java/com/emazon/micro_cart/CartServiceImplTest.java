@@ -1,4 +1,5 @@
 package com.emazon.micro_cart;
+
 import com.emazon.micro_cart.domain.exception.*;
 import com.emazon.micro_cart.domain.interfaces.*;
 import com.emazon.micro_cart.domain.model.Cart;
@@ -8,6 +9,8 @@ import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
 import feign.FeignException;
+import feign.FeignException.BadRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -140,8 +143,8 @@ class CartServiceImplTest {
 
     @Test
     void shouldThrowErrorFeignExceptionWhenFeignClientFails() {
-        when(stockService.validItemExist(anyInt())).thenThrow(FeignException.class);
-
+        when(stockService.validItemExist(anyInt()))
+                .thenThrow(new ErrorFeignException(ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
         ErrorFeignException exception = assertThrows(ErrorFeignException.class, () -> {
             cartService.addItemsToCart(1, 5);
         });
@@ -151,7 +154,7 @@ class CartServiceImplTest {
 
     @Test
     void shouldAddItemsToCartSuccessfully() {
-        
+
         when(stockService.validItemExist(1)).thenReturn(true);
         when(stockService.validItemQuantity(1)).thenReturn(10);
         when(repository.getClientId()).thenReturn(1);
@@ -210,21 +213,20 @@ class CartServiceImplTest {
 
     @Test
     public void testCartAndCartItemPresent_CartItemUpdated() {
-        
+
         Integer userId = 123;
         Integer productId = 1;
         Integer quantity = 3;
         List<Integer> articleIds = Arrays.asList(1, 2, 3);
-        Integer itemQuantity = 8; 
-    
-      
+        Integer itemQuantity = 8;
+
         when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(articleIds);
         when(stockService.validCategories(articleIds)).thenReturn(true);
-        when(stockService.validItemExist(productId)).thenReturn(true); 
-        when(stockService.validItemQuantity(productId)).thenReturn(itemQuantity); 
+        when(stockService.validItemExist(productId)).thenReturn(true);
+        when(stockService.validItemQuantity(productId)).thenReturn(itemQuantity);
         when(repositoryItems.findByProductIdAndUserId(productId, userId)).thenReturn(Optional.of(cartItem));
-    
+
         cartService.addItemsToCart(productId, quantity);
         assertEquals(5, cartItem.getQuantity());
     }

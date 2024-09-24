@@ -11,6 +11,7 @@ import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartItemsEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.persistence.IRepositoryCartJpa;
 import com.emazon.micro_cart.infraestructur.security.jwt_configuration.JwtService;
+import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,6 +32,7 @@ public class RepositoryCartImpl implements IRepositoryCart {
         CartItemsEntity cartItemsEntity = mapper.toCartItemsEntity(cartItems);
         cartItemsEntity.setCart(mapper.toCartEntity(cart));
         cart.getItems().add(cartItemsEntity);
+        cartItems.setCart(mapper.toCartEntity(cart));
         repositoryJpa.save(mapper.toCartEntity(cart));
     }
 
@@ -45,7 +47,7 @@ public class RepositoryCartImpl implements IRepositoryCart {
 
         HttpServletRequest request = ((ServletRequestAttributes) Objects
                 .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        String jwt = request.getHeader("Authorization");
+        String jwt = request.getHeader(ConstantsInfraestructure.AUTHORIZATION);
         jwt = jwt.substring(7);
         return jwtService.extractUserId(jwt);
     }
