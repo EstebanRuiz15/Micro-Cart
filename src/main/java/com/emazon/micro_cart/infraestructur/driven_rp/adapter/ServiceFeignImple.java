@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.emazon.micro_cart.domain.exception.ErrorFeignException;
 import com.emazon.micro_cart.domain.interfaces.IStockServicePort;
+import com.emazon.micro_cart.domain.model.ArticlesMod;
 import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.feign.StockClient;
 
@@ -44,4 +45,13 @@ public class ServiceFeignImple implements IStockServicePort {
             throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
         }
     };
+
+    @Override
+    public List<ArticlesMod> allArticles(List<Integer> idsArticles){
+        try {
+            return stockClient.getAllArticlestoId(idsArticles);
+        } catch (FeignException e) {
+              throw new ErrorFeignException((ConstantsDomain.COMUNICATION_ERROR_WITH_SERVICE));
+        }
+    }
 }

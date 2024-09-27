@@ -2,14 +2,15 @@ package com.emazon.micro_cart;
 
 import com.emazon.micro_cart.domain.exception.*;
 import com.emazon.micro_cart.domain.interfaces.*;
+import com.emazon.micro_cart.domain.model.ArticlesMod;
 import com.emazon.micro_cart.domain.model.Cart;
 import com.emazon.micro_cart.domain.model.CartItems;
+import com.emazon.micro_cart.domain.model.CategoryMod;
+import com.emazon.micro_cart.domain.model.PaginItems;
 import com.emazon.micro_cart.domain.services.CartServiceImpl;
 import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
-import feign.FeignException;
-import feign.FeignException.BadRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,9 +20,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,7 +34,7 @@ class CartServiceImplTest {
     private IStockServicePort stockService;
 
     @Mock
-    private IRepositoryCart repository;
+    private ICartPersistance repository;
 
     @Mock
     private IRepositoryItemsPort repositoryItems;
@@ -204,7 +204,7 @@ class CartServiceImplTest {
         when(repository.getClientId()).thenReturn(123);
         when(repositoryItems.findByProductIdAndUserId(1, 123)).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> cartService.deleteItemsToCart(1, 3));
+        assertThrows(ErrorNotFoundArticleToDelete.class, () -> cartService.deleteItemsToCart(1, 3));
 
         verify(repositoryItems, never()).delete(any());
         verify(repositoryItems, never()).save(any());
@@ -229,5 +229,135 @@ class CartServiceImplTest {
 
         cartService.addItemsToCart(productId, quantity);
         assertEquals(5, cartItem.getQuantity());
+    }
+
+    @Test
+    public void getAllItemsToCart_ShouldReturnPaginatedItems_WhenCartExists() {
+        // Arrange
+        Integer userId = 1;
+        Integer pageSize = 10;
+        Integer pageNumber = 0;
+        String orderBy = "name";
+        String filterBy = null;
+        String nameFilter = null;
+
+        Cart cart = new Cart();
+        cart.setId(1);
+        cart.setUserId(userId);
+        cart.setCreationDate(LocalDateTime.now());
+
+        CartItems item1 = new CartItems();
+        item1.setProductId(1);
+        item1.setQuantity(2);
+
+        CartItems item2 = new CartItems();
+        item2.setProductId(2);
+        item2.setQuantity(1);
+
+        when(repository.getClientId()).thenReturn(userId);
+        when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(Arrays.asList(1, 2));
+        when(stockService.allArticles(Arrays.asList(1, 2))).thenReturn(Arrays.asList(
+            new ArticlesMod(1, "Article 1", "Description 1", 10.0, 20, null, 2, "Brand1", null),
+            new ArticlesMod(2, "Article 2", "Description 2", 15.0, 15, null, 1, "Brand2", null)
+        ));
+        
+        // Act
+        PaginItems result = cartService.getAllIemsToCart(pageSize, pageNumber, orderBy, filterBy, nameFilter);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).hasSize(2);
+    }
+
+    @Test
+    public void getAllItemsToCart_ShouldThrowErrorExceptionConflict_WhenCartDoesNotExist() {
+        
+        Integer userId = 1;
+        when(repository.getClientId()).thenReturn(userId);
+        when(repository.findByUserId(userId)).thenReturn(Optional.empty());
+
+    }
+
+    @Test
+    public void getAllItemsToCart_ShouldThrowErrorExceptionConflict_WhenNoArticlesInCart() {
+        
+        Integer userId = 1;
+        Cart cart = new Cart();
+        cart.setId(1);
+        cart.setUserId(userId);
+        cart.setCreationDate(LocalDateTime.now());
+
+        when(repository.getClientId()).thenReturn(userId);
+        when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(null);
+
+       
+        ErrorExceptionConflict thrown = assertThrows(ErrorExceptionConflict.class, () -> {
+            cartService.getAllIemsToCart(10, 0, "name", null, null);
+        });
+        assertThat(thrown.getMessage()).isEqualTo(ConstantsDomain.NO_ARTICLES_IN_CART);
+    }
+
+    @Test
+    public void getAllItemsToCart_ShouldReturnFilteredItemsByCategory_WhenCategoryFilterIsProvided() {
+        // Arrange
+        Integer userId = 1;
+        Integer pageSize = 10;
+        Integer pageNumber = 0;
+        String orderBy = "name";
+        String filterBy = ConstantsDomain.CATEGORIES;
+        String nameFilter = "Category1";
+
+        Cart cart = new Cart();
+        cart.setId(1);
+        cart.setUserId(userId);
+        cart.setCreationDate(LocalDateTime.now());
+
+        ArticlesMod article1 = new ArticlesMod(1, "Article 1", "Description 1", 10.0, 20, null, 2, "Brand1", 
+            Arrays.asList(new CategoryMod("Category1","des")));
+        ArticlesMod article2 = new ArticlesMod(2, "Article 2", "Description 2", 15.0, 15, null, 1, "Brand2", 
+            Arrays.asList(new CategoryMod("Category2","des")));
+
+        when(repository.getClientId()).thenReturn(userId);
+        when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(Arrays.asList(1, 2));
+        when(stockService.allArticles(Arrays.asList(1, 2))).thenReturn(Arrays.asList(article1, article2));
+
+        PaginItems result = cartService.getAllIemsToCart(pageSize, pageNumber, orderBy, filterBy, nameFilter);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).hasSize(1); 
+        assertThat(result.getItems().get(0).getName()).isEqualTo("Article 1");
+    }
+
+    @Test
+    public void getAllItemsToCart_ShouldReturnFilteredItemsByBrand_WhenBrandFilterIsProvided() {
+        
+        Integer userId = 1;
+        Integer pageSize = 10;
+        Integer pageNumber = 0;
+        String orderBy = "name";
+        String filterBy = ConstantsDomain.BRAND;
+        String nameFilter = "Brand1";
+
+        Cart cart = new Cart();
+        cart.setId(1);
+        cart.setUserId(userId);
+        cart.setCreationDate(LocalDateTime.now());
+
+        ArticlesMod article1 = new ArticlesMod(1, "Article 1", "Description 1", 10.0, 20, null, 2, "Brand1", null);
+        ArticlesMod article2 = new ArticlesMod(2, "Article 2", "Description 2", 15.0, 15, null, 1, "Brand2", null);
+        
+        when(repository.getClientId()).thenReturn(userId);
+        when(repository.findByUserId(userId)).thenReturn(Optional.of(cart));
+        when(repositoryItems.getAllArticlesId(cart.getId())).thenReturn(Arrays.asList(1, 2));
+        when(stockService.allArticles(Arrays.asList(1, 2))).thenReturn(Arrays.asList(article1, article2));
+
+        PaginItems result = cartService.getAllIemsToCart(pageSize, pageNumber, orderBy, filterBy, nameFilter);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).hasSize(1); 
+        assertThat(result.getItems().get(0).getName()).isEqualTo("Article 1");
     }
 }

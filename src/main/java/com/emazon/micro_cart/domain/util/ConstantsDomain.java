@@ -15,4 +15,14 @@ public final class  ConstantsDomain {
     public static final String ADD_WITH_EXIT="article added with exit";
     public static final String DELETE_WHIT_SUCESS="delete with exit";
     public static final String NOT_ARTICLE_TO_DELETE="The article has already been deleted";
+    public static final Integer ZERO=0;
+    public static final String NO_ARTICLES_FOUND_EXCEPTION_MESSAGE="NO articles were found for this page";
+    public static final String TOTAL_PAGES=", total pages is: ";
+    public static final String DESC="desc";
+    public static final String CATEGORIES="categories";
+    public static final String BRAND="brand";
+    public static final String NO_FOUND_CART="You don't have a car yet";
+    public static final String NO_ARTICLES_IN_CART="No items have been added to the cart yet";
+    public static final Integer ONE=1;
+    public static final Integer SEVEN=7;
 }

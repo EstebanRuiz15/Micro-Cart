@@ -26,5 +26,8 @@ public interface IRepositoryCartItemsJpa extends JpaRepository<CartItemsEntity, 
     @Query("SELECT ci FROM CartItemsEntity ci WHERE ci.productId = :productId AND ci.cart.userId = :userId")
     Optional<CartItemsEntity> findByProductIdAndUserId(@Param("productId") Integer productId, @Param("userId") Integer userId);
 
-    Page<CartItemsEntity> findItemIdsByCartId(Integer cartId, Pageable pageable);
+    List<CartItemsEntity> findByCartId(Integer id);
+
+    @Query("SELECT ci.productId FROM CartItemsEntity ci WHERE ci.cart.id = :cartId")
+    Page<Long> findProductIdsByCartId(@Param("cartId") Long cartId, Pageable pageable);
 }

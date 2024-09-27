@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import com.emazon.micro_cart.domain.exception.ErrorExceptionCategoriesRepit;
+import com.emazon.micro_cart.domain.exception.ErrorExceptionConflict;
 import com.emazon.micro_cart.domain.exception.ErrorExceptionQuantity;
 import com.emazon.micro_cart.domain.exception.ErrorFeignException;
 import com.emazon.micro_cart.domain.exception.ErrorNotFoudArticle;
@@ -90,6 +91,14 @@ public class ControlAdvice {
 
     @ExceptionHandler(ErrorNotFoundArticleToDelete.class)
     public ResponseEntity<?> ErrorNotArticleToDelete(ErrorNotFoundArticleToDelete ex, WebRequest request) {
+        ExceptionResponse errorDetails = new ExceptionResponse(HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ErrorExceptionConflict.class)
+    public ResponseEntity<?> ErrorExceptionConflic(ErrorExceptionConflict ex, WebRequest request) {
         ExceptionResponse errorDetails = new ExceptionResponse(HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
                 request.getDescription(false));

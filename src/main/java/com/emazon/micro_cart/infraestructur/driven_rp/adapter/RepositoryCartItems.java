@@ -2,7 +2,9 @@ package com.emazon.micro_cart.infraestructur.driven_rp.adapter;
 
 import org.springframework.stereotype.Service;
 import com.emazon.micro_cart.domain.interfaces.IRepositoryItemsPort;
+import com.emazon.micro_cart.domain.model.ArticlesMod;
 import com.emazon.micro_cart.domain.model.CartItems;
+import com.emazon.micro_cart.domain.model.PaginItems;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.persistence.IRepositoryCartItemsJpa;
 
@@ -28,34 +30,33 @@ public class RepositoryCartItems implements IRepositoryItemsPort {
 
     @Override
     public void delete(CartItems cartItems) {
-         repositoryJpa.delete(mapper.toCartItemsEntity(cartItems));
-        
+        repositoryJpa.delete(mapper.toCartItemsEntity(cartItems));
+
     }
 
     @Override
     public Optional<CartItems> findByProductIdAndUserId(Integer productId, Integer userId) {
-         return repositoryJpa.findByProductIdAndUserId(productId, userId)
-                 .map(mapper::toCartItems);
-        
+        return repositoryJpa.findByProductIdAndUserId(productId, userId)
+                .map(mapper::toCartItems);
+
     }
 
     @Override
     public void save(CartItems cartItems) {
         repositoryJpa.save(mapper.toCartItemsEntity(cartItems));
-        
+
     }
 
-    /*
-     * @Override
-     * public PaginItems getPaginatedCarItems(List<ArticlesMod> articles,Integer
-     * cartId,Integer size,Integer page){
-     * Pageable pageable= PageRequest.of(page, size);
-     * Page<CartItemsEntity> cartItemsPage =
-     * repositoryJpa.findItemIdsByCartId(cartId, pageable);
-     * 
-     * paginItems.setItems(articles);
-     * paginItems.setQuantity(pageable.);
-     * 
-     * }
-     */
+    @Override
+    public List<CartItems> getAllItems(Integer id) {
+
+        return mapper.toListCartItems(repositoryJpa.findByCartId(id));
+    }
+
+    @Override
+    public PaginItems getPaginatedCarItems(List<ArticlesMod> items,Integer size,Integer page){
+        
+        return null;
+    }
+
 }

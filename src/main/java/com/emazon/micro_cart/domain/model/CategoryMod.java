@@ -11,4 +11,5 @@ import lombok.Setter;
 @Setter
 public class CategoryMod {
     private String name;
+    private String description;
 }

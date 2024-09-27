@@ -1,6 +1,8 @@
 package com.emazon.micro_cart.domain.interfaces;
 
 import java.util.List;
+
+import com.emazon.micro_cart.domain.model.ArticlesMod;
 import com.emazon.micro_cart.domain.model.CartItems;
 import com.emazon.micro_cart.domain.model.PaginItems;
 
@@ -12,5 +14,7 @@ public interface IRepositoryItemsPort {
     void delete(CartItems cartItems);
     Optional<CartItems> findByProductIdAndUserId( Integer productId, Integer userId);
     void save(CartItems cartItems);
-    /* PaginItems getPaginatedCarItems(Integer cartId,Integer size,Integer page); */
+    List<CartItems> getAllItems(Integer id);
+    PaginItems getPaginatedCarItems(List<ArticlesMod> items,Integer size,Integer page); 
+    
 }

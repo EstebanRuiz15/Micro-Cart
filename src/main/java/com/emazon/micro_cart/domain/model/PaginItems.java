@@ -11,10 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class PaginItems {
-    private List<ArticlesMod> items; 
-    private Integer quantity;
+    private List<ArticlesMod> items;
     private  Integer  currentPage;
     private  Integer size;
     private  Integer totalpages;
     private  Integer totalData;
+    private String totalToPay;
 }

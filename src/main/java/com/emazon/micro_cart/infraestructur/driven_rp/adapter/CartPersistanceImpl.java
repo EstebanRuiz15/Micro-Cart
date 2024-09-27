@@ -4,9 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.emazon.micro_cart.domain.interfaces.IRepositoryCart;
+import com.emazon.micro_cart.domain.interfaces.ICartPersistance;
 import com.emazon.micro_cart.domain.model.Cart;
 import com.emazon.micro_cart.domain.model.CartItems;
+import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartItemsEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.persistence.IRepositoryCartJpa;
@@ -21,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class RepositoryCartImpl implements IRepositoryCart {
+public class CartPersistanceImpl implements ICartPersistance {
     private final IRepositoryCartJpa repositoryJpa;
     private final IMapperCartToEntity mapper;
     private final JwtService jwtService;
@@ -48,7 +49,7 @@ public class RepositoryCartImpl implements IRepositoryCart {
         HttpServletRequest request = ((ServletRequestAttributes) Objects
                 .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String jwt = request.getHeader(ConstantsInfraestructure.AUTHORIZATION);
-        jwt = jwt.substring(7);
+        jwt = jwt.substring(ConstantsDomain.SEVEN);
         return jwtService.extractUserId(jwt);
     }
 
