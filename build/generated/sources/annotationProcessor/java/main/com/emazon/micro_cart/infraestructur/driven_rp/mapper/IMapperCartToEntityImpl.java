@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-22T15:39:28-0500",
+    date = "2024-09-24T23:46:55-0500",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.12 (Eclipse Adoptium)"
 )
 @Component
@@ -99,5 +99,19 @@ public class IMapperCartToEntityImpl implements IMapperCartToEntity {
         cartItems.setQuantity( cartItemsEntity.getQuantity() );
 
         return cartItems;
+    }
+
+    @Override
+    public List<CartItems> toListCartItems(List<CartItemsEntity> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CartItems> list1 = new ArrayList<CartItems>( list.size() );
+        for ( CartItemsEntity cartItemsEntity : list ) {
+            list1.add( toCartItems( cartItemsEntity ) );
+        }
+
+        return list1;
     }
 }

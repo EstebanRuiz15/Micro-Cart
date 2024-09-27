@@ -4,13 +4,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.emazon.micro_cart.domain.interfaces.IRepositoryCart;
+import com.emazon.micro_cart.domain.interfaces.ICartPersistance;
 import com.emazon.micro_cart.domain.model.Cart;
 import com.emazon.micro_cart.domain.model.CartItems;
+import com.emazon.micro_cart.domain.util.ConstantsDomain;
 import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartItemsEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.mapper.IMapperCartToEntity;
 import com.emazon.micro_cart.infraestructur.driven_rp.persistence.IRepositoryCartJpa;
 import com.emazon.micro_cart.infraestructur.security.jwt_configuration.JwtService;
+import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -20,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class RepositoryCartImpl implements IRepositoryCart {
+public class CartPersistanceImpl implements ICartPersistance {
     private final IRepositoryCartJpa repositoryJpa;
     private final IMapperCartToEntity mapper;
     private final JwtService jwtService;
@@ -31,6 +33,7 @@ public class RepositoryCartImpl implements IRepositoryCart {
         CartItemsEntity cartItemsEntity = mapper.toCartItemsEntity(cartItems);
         cartItemsEntity.setCart(mapper.toCartEntity(cart));
         cart.getItems().add(cartItemsEntity);
+        cartItems.setCart(mapper.toCartEntity(cart));
         repositoryJpa.save(mapper.toCartEntity(cart));
     }
 
@@ -45,8 +48,8 @@ public class RepositoryCartImpl implements IRepositoryCart {
 
         HttpServletRequest request = ((ServletRequestAttributes) Objects
                 .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        String jwt = request.getHeader("Authorization");
-        jwt = jwt.substring(7);
+        String jwt = request.getHeader(ConstantsInfraestructure.AUTHORIZATION);
+        jwt = jwt.substring(ConstantsDomain.SEVEN);
         return jwtService.extractUserId(jwt);
     }
 
