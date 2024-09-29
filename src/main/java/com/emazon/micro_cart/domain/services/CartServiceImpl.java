@@ -106,7 +106,7 @@ public class CartServiceImpl implements ICartServicePort {
         }
         List<Integer> ids = repositoryItems.getAllArticlesId(cart.getId());
         if (ids == null) {
-            throw new ErrorExceptionConflict(ConstantsDomain.NO_ARTICLES_IN_CART);
+            throw new ErrorNotFoudArticle(ConstantsDomain.NO_ARTICLES_IN_CART);
         }
 
         List<ArticlesMod> itemsInCart = stockService.allArticles(ids);
@@ -125,6 +125,28 @@ public class CartServiceImpl implements ICartServicePort {
         itemsInCart = existQuantityInStockMessage(itemsInCart);
 
         return getItemsPaginated(itemsInCart, size, page, totalpay);
+    }
+
+    @Override
+    public List<CartItems> getAllItems (){
+        Integer idUser=CartPersistance.getClientId();
+        Optional<Cart> cart=CartPersistance.findByUserId(idUser);
+        if(!cart.isPresent()){
+            throw new ErrorNotFoudArticle(ConstantsDomain.NOTHING_THAT_BUY);
+        }
+        if(repositoryItems.getAllArticlesId(cart.get().getId())==null){
+            throw new ErrorNotFoudArticle(ConstantsDomain.NOTHING_THAT_BUY);
+        }
+        
+      return repositoryItems.getAllItems(cart.get().getId());
+    }
+
+    @Override
+    public boolean updateCart(){
+        Integer userId=CartPersistance.getClientId();
+        Cart cart=CartPersistance.findByUserId(userId).orElse(null);
+        repositoryItems.deleteByCartId(cart.getId());
+        return true;
     }
 
     private Cart createNewCart(Integer userId) {
@@ -244,4 +266,6 @@ public class CartServiceImpl implements ICartServicePort {
 
         return String.format("%.2f", totalPrice);
     }
+
+
 }

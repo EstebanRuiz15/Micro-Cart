@@ -1,5 +1,7 @@
 package com.emazon.micro_cart.infraestructur.driving_http.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.emazon.micro_cart.domain.interfaces.ICartServicePort;
+import com.emazon.micro_cart.infraestructur.driving_http.dtos.response.ItemDto;
 import com.emazon.micro_cart.infraestructur.driving_http.dtos.response.PaginItemsDto;
+import com.emazon.micro_cart.infraestructur.driving_http.mappers.IItemsMapper;
 import com.emazon.micro_cart.infraestructur.driving_http.mappers.PaginItemResponseMapper;
 import com.emazon.micro_cart.infraestructur.util.ConstantsInfraestructure;
 
@@ -29,6 +33,7 @@ import lombok.AllArgsConstructor;
 @Validated
 public class ControllerCart{
     private final ICartServicePort serviceCart;
+    private final IItemsMapper mapperItems;
 
     @Operation(summary = "Method for added items to the cart", description = "This method allows you to add items to the cart, if you already have a cart add the item, if you don't have one create a cart and add your first item\n\n "
             +
@@ -100,13 +105,27 @@ public class ControllerCart{
 })
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/")
-    public ResponseEntity<PaginItemsDto> getAllItemsToCart( @RequestParam(defaultValue = "0") Integer page,
-                                                            @RequestParam(defaultValue = "10") Integer size,
-                                                            @RequestParam(defaultValue = "asc") String order,
-                                                            @RequestParam(required = false) String filterBy,
-                                                            @RequestParam (required = false) String nameFilter ){
+    public ResponseEntity<PaginItemsDto> getAllItemsToCart(
+        @RequestParam(defaultValue = ConstantsInfraestructure.ZERO_STRING) Integer page,
+        @RequestParam(defaultValue = ConstantsInfraestructure.TEN_STRING) Integer size,
+        @RequestParam(defaultValue = ConstantsInfraestructure.ASEND) String order,
+        @RequestParam(required = false) String filterBy,
+        @RequestParam (required = false) String nameFilter ){
      return ResponseEntity.ok(PaginItemResponseMapper.INSTANCE.toDto(serviceCart.getAllIemsToCart(size, page, order, filterBy,nameFilter )));    
     }
+
+    @PreAuthorize("hasRole('CLIENT')")
+    @GetMapping("/itemsId")
+    public ResponseEntity<List<ItemDto>> getAllIdItems(){
+        return ResponseEntity.ok(mapperItems.toItemDto(serviceCart.getAllItems()));
+    }
+
+    @PreAuthorize("hasRole('CLIENT')")
+    @PostMapping("/update")
+    public ResponseEntity<Boolean> updateCart(){
+        return ResponseEntity.ok(serviceCart.updateCart());
+    }
+
     
 }
 

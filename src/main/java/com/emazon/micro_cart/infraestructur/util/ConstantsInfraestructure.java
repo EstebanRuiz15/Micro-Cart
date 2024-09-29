@@ -14,4 +14,7 @@ public final  class ConstantsInfraestructure {
     public static final String ID="id";
     public static final String QUANTITY="quantity";
     public static final String DELETE_WHIT_SUCESS="delete with exit";
+    public static final String ASEND="asc";
+    public static final String TEN_STRING="10";
+    public static final String ZERO_STRING="0";
 }
