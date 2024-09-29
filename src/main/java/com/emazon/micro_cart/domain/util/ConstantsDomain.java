@@ -25,4 +25,5 @@ public final class  ConstantsDomain {
     public static final String NO_ARTICLES_IN_CART="No items have been added to the cart yet";
     public static final Integer ONE=1;
     public static final Integer SEVEN=7;
+    public static final String NOTHING_THAT_BUY="You still don't have anything to buy";
 }

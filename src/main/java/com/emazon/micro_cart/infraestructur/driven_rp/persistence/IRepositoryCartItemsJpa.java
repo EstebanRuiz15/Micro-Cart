@@ -9,6 +9,8 @@ import java.util.List;
 import com.emazon.micro_cart.infraestructur.driven_rp.entity.CartItemsEntity;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Repository
@@ -30,4 +32,9 @@ public interface IRepositoryCartItemsJpa extends JpaRepository<CartItemsEntity, 
 
     @Query("SELECT ci.productId FROM CartItemsEntity ci WHERE ci.cart.id = :cartId")
     Page<Long> findProductIdsByCartId(@Param("cartId") Long cartId, Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CartItemsEntity i WHERE i.cart.id = :cartId")
+    void deleteByCartId(Integer cartId);
 }

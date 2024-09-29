@@ -16,5 +16,6 @@ public interface IRepositoryItemsPort {
     void save(CartItems cartItems);
     List<CartItems> getAllItems(Integer id);
     PaginItems getPaginatedCarItems(List<ArticlesMod> items,Integer size,Integer page); 
+    void deleteByCartId(Integer idCart);
     
 }

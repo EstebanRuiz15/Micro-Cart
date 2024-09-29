@@ -1,6 +1,8 @@
 package com.emazon.micro_cart.infraestructur.driven_rp.adapter;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.emazon.micro_cart.domain.interfaces.IRepositoryItemsPort;
 import com.emazon.micro_cart.domain.model.ArticlesMod;
 import com.emazon.micro_cart.domain.model.CartItems;
@@ -57,6 +59,12 @@ public class RepositoryCartItems implements IRepositoryItemsPort {
     public PaginItems getPaginatedCarItems(List<ArticlesMod> items,Integer size,Integer page){
         
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteByCartId(Integer idCart){
+        repositoryJpa.deleteByCartId(idCart);
     }
 
 }
