@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.emazon.micro_cart.CartServiceImplTest" tests="8" skipped="0" failures="1" errors="0" timestamp="2024-09-22T21:03:57" hostname="DESKTOP-JLC71V1" time="1.27">
+  <properties/>
+  <testcase name="shouldAddItemsToCartSuccessfully()" classname="com.emazon.micro_cart.CartServiceImplTest" time="1.194"/>
+  <testcase name="shouldCreateNewCartIfUserHasNoCart()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.013">
+    <failure message="java.util.NoSuchElementException: No value present" type="java.util.NoSuchElementException">java.util.NoSuchElementException: No value present
+	at java.base/java.util.Optional.get(Unknown Source)
+	at com.emazon.micro_cart.domain.services.CartServiceImpl.addItemsToCart(CartServiceImpl.java:49)
+	at com.emazon.micro_cart.CartServiceImplTest.shouldCreateNewCartIfUserHasNoCart(CartServiceImplTest.java:90)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.base/java.util.ArrayList.forEach(Unknown Source)
+	at java.base/java.util.ArrayList.forEach(Unknown Source)
+</failure>
+  </testcase>
+  <testcase name="shouldThrowErrorExceptionQuantityWhenItemQuantityIsZero()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.01"/>
+  <testcase name="shouldThrowErrorFeignExceptionWhenFeignClientFails()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.023"/>
+  <testcase name="shouldThrowErrorExceptionCategoriesRepitWhenTooManyCategoriesRepeat()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.004"/>
+  <testcase name="shouldThrowErrorExceptionQuantityWhenItemQuantityIsLessThanRequested()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.005"/>
+  <testcase name="shouldAddItemToExistingCart()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.006"/>
+  <testcase name="shouldThrowErrorNotFoundArticleWhenItemDoesNotExist()" classname="com.emazon.micro_cart.CartServiceImplTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
